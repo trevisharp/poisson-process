@@ -2,37 +2,37 @@
 using System.Linq;
 
 var X = monteCarlo(.5f, 10_000);
-var Y = poisson(5f);
+var Y = poissonDist(5f);
+Console.WriteLine(X2(Y, X));
 
-var error = X.Take(15).Zip(Y.Take(15))
-    .Select(t => t.First - t.Second)
-    .Select(MathF.Abs)
-    .Average();
-
-Console.WriteLine(100 * error);
-
-float[] poisson(float lambda)
+float X2(float[] expected, float[] dist)
 {
-    const float time = 10f;
-    int maxExpected = (int)(5 * time * lambda);
+    float sum = 0;
+    for (int i = 0; i < expected.Length; i++)
+    {
+        var diff = dist[i] - expected[i];
+        sum += diff * diff / expected[i];
+    }
+    return sum;
+}
+
+float[] poissonDist(float lambda)
+{
+    int maxExpected = (int)(5 * lambda);
     var dist = new float[maxExpected];
 
-    var explambda = MathF.Exp(-lambda);
     for (int k = 0; k < dist.Length; k++)
-        dist[k] = MathF.Pow(lambda, k) * explambda / factorial(k);
+        dist[k] = poisson(lambda, k);
     
     return dist;
 }
 
-int factorial(int k)
+float poisson(float lambda, int k)
 {
-    int result = 1;
-    while (k > 1)
-    {
-        result *= k;
-        k--;
-    }
-    return result;
+    float result = 1f;
+    for (int i = 0; i < k; i++)
+        result *= lambda / (i + 1);
+    return result * MathF.Exp(-lambda);
 }
 
 float[] monteCarlo(float lambda, int k)
