@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 
 var X = monteCarlo(.5f, 10_000);
 var Y = poissonDist(5f);
